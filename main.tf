@@ -1,0 +1,1 @@
+# Generate unique suffix for reources requiring global uniqeness
