@@ -1,1 +1,108 @@
 # Example terraform.tfvars file
+# Copy this file to terraform.tfvars and update with your values
+
+# Project Configuration
+project_name    = "azure-landing-zone"
+environment     = "dev" # dev, staging, or prod
+location        = "eastus"
+
+# Resource Group
+resource_group_name = "rg-landingzone-dev-001"
+
+# Networking
+vnet_name           = "vnet-landingzone-dev-001"
+vnet_address_space  = ["10.0.0.0/16"]
+
+subnets = {
+  frontend = {
+    name               = "snet-frontend"
+    address_prefixes    = ["10.0.1.0/24"]
+    service_endpoints   = ["Microsoft.KeyVault", "Microsoft.Storage"]
+    nsg_rules = [
+      {
+        name                      = "AllowHTTPS"
+        priority                  = 100
+        direction                 = "Inbound"
+        access                    = "Allow"
+        protocol                  = "Tcp"
+        source_port_range         = "*"
+        destination_port_range    = "443"
+        source_address_prefix     = "Internet"
+        destination_address_prefix = "*"
+      }
+    ]
+  }
+  backend = {
+    name               = "snet-backend"
+    address_prefixes    = ["10.0.2.0/24"]
+    service_endpoints   = ["Microsoft.Sql", "Microsoft.KeyVault", "Microsoft.Storage"]
+    nsg_rules = [
+      {
+        name                      = "AllowFrontend"
+        priority                  = 100
+        direction                 = "Inbound"
+        access                    = "Allow"
+        protocol                  = "Tcp"
+        source_port_range         = "*"
+        destination_port_range    = "*"
+        source_address_prefix     = "10.0.1.0/24"
+        destination_address_prefix = "*"
+      }
+    ]
+  }
+  management = {
+    name               = "snet-management"
+    address_prefixes    = ["10.0.3.0/24"]
+    service_endpoints   = ["Microsoft.KeyVault"]
+    nsg_rules           = []
+  }
+}
+
+# Azure Policy
+enforce_tagging             = true
+required_tags               = ["Environment", "Owner", "CostCenter", "Application"]
+enforce_allowed_locations   = true
+allowed_locations           = ["eastus", "westus", "centralus"]
+enforce_encryption          = true
+enable_diagnostic_audit     = true
+
+# Key Vault
+key_vault_name_prefix           = "kv-lz-dev"
+key_vault_sku                   = "standard"
+key_vault_purge_protection      = true
+key_vault_enable_rbac           = true
+key_vault_enabled_for_deployment        = false
+key_vault_enabled_for_disk_encryption   = false
+key_vault_enabled_for_template_deployment = true
+key_vault_default_action        = "Deny"
+key_vault_allowed_ips           = [] # Add your IP: ["x.x.x.x/32"]
+key_vault_allowed_subnets       = ["backend", "management"]
+enable_key_vault_private_endpoint = false
+key_vault_private_endpoint_subnet = "backend"
+
+# Log Analytics (optional - set to actual workspace ID if available)
+log_analytics_workspace_id = null
+
+# IAM Role Assignments
+# Add your role assignments here
+role_assignments = {}
+# Example:
+# role_assignments = {
+#   "contributor_assignment" = {
+#     scope            = "/subscriptions/YOUR-SUBSCRIPTION-ID/resourceGroups/rg-landingzone-dev-001"
+#     role_definition_name = "Contributor"
+#     principal_id     = "YOUR-PRINCIPAL-ID"
+#     description      = "Contributor access to landing zone"
+#   }
+# }
+
+custom_roles = {}
+custom_role_assignments = {}
+
+# Additional Tags
+tags = {
+  Owner        = "DevOps Team"
+  CostCenter   = "IT-001"
+  Application  = "Landing Zone"
+  Compliance   = "Standard"
+}
