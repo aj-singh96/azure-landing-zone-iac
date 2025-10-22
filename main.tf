@@ -89,4 +89,13 @@ module "iam" {
 # Local variables
 locals {
   common_tags = merge (
+    var.tags,
+      {
+        Environment = var.environment
+        ManagedBy = "Terraform"
+        CreatedDate = formatdate("YYYY-MM-DD". timestamp())
+        Project = var.project_name
+      }
+  )
+}
     
