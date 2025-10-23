@@ -1,0 +1,57 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!terraform.tfvars.example
+!environments/**/*.tfvars
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+
+# Environment variables
+.env
+.env.local
+*.local
+
+# Logs
+*.log
+logs/
+
+# Security
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Backup files
+*.bak
+*.backup
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Terraform documentation
+.terraform-docs.yml
+
+# Checkov
+.checkov.yaml
+.checkov.yml
+
+# Testing
+.test/
+test-results/
