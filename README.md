@@ -69,48 +69,40 @@ modules/
 │   ├── main.tf
 │   ├── variables.tf
 │   ├── outputs.tf
-│   └── README.md
 ├── networking/         # VNet, subnets, NSGs module
 │   ├── main.tf
 │   ├── variables.tf
 │   ├── outputs.tf
-│   └── README.md
 ├── azure-policy/       # Azure Policy assignments
 │   ├── main.tf
 │   ├── variables.tf
 │   ├── outputs.tf
-│   └── README.md
 ├── key-vault/          # Azure Key Vault module
 │   ├── main.tf
 │   ├── variables.tf
 │   ├── outputs.tf
-│   └── README.md
 ├── iam/                # IAM/RBAC module
 │   ├── main.tf
 │   ├── variables.tf
 │   ├── outputs.tf
-│   └── README.md
-    environments/                    # Environment-specific configurations
-    ├── dev/
-    │   └── terraform.tfvars
-    ├── staging/
-    │   └── terraform.tfvars
-    └── prod/
-        └── terraform.tfvars
-    .github/workflows/               # GitHub Actions pipelines
-    │   └── terraform.yml
-    pipelines/                       # Azure DevOps pipelines
-    │   └── azure-pipelines.yml
-    main.tf                          # Root module configuration
-    providers.tf                     # Provider configuration
-    variables.tf                     # Root variables
-    outputs.tf                       # Root outputs
-    backend.hcl                      # Backend configuration
-    terraform.tfvars.example         # Example variables file
-    .gitignore
-    LICENSE
-    CONTRIBUTING.md
-    README.md
+├── environments/                    # Environment-specific configurations
+|    ├── dev/
+|    │   └── terraform.tfvars
+|    ├── staging/
+|    │   └── terraform.tfvars
+|    └── prod/
+|        └── terraform.tfvars
+├──.github/workflows/               # GitHub Actions pipelines
+│   └── terraform.yml
+├── main.tf                          # Root module configuration
+├── providers.tf                     # Provider configuration
+├── variables.tf                     # Root variables
+├── outputs.tf                       # Root outputs
+├── backend.hcl                      # Backend configuration
+├── terraform.tfvars.example         # Example variables file
+├── .gitignore
+├── LICENSE
+├── README.md
 ```
 
 ## 🚀 Quick Start
