@@ -370,3 +370,196 @@ The project includes a complete Github Actions workflow(`.github/workflow/terraf
 Configure these secrets in your Github repository: 
 
 ```
+ARM_CLIENT_ID
+ARM_CLIENT_SECRET
+ARM_SUBSCRIPTION_ID
+ARM_TENANT_ID
+BACKEND_RESOURCE_GROUP
+BACKEND_STORAGE_ACCOUNT
+BACKEND_CONTAINER
+```
+
+### Azure DevOps
+
+Azure Pipelines configuration (`pipelines/azure-pipelines.yml`) provides:
+
+- **Multi-Stage Pipeline**: Validate → Scan → Plan → Deploy
+- **Environment Approvals**: Built-in environment protection
+- **Security Scanning**: Integrated Checkov and TFSec
+- **Artifact Management**: Plan file preservation between stages
+
+#### Required Variables
+
+Configure these in Azure DevOps Library or Pipeline Variables:
+
+BACKEND_RESOURCE_GROUP
+BACKEND_STORAGE_ACCOUNT
+BACKEND_CONTAINER
+
+#### Required Service Connection
+
+Create an Azure Service Connection named `Azure-Service-Connection` with appropriate permissions.
+
+## 🧩 Extending the Landing Zone
+
+### Adding a New Module
+
+1. Create module directory under `modules/`
+2. Implement `main.tf`, `variables.tf`, `outputs.tf`
+3. Document module in `README.md`
+4. Reference module in root `main.tf`
+5. Update root variables and outputs
+
+Example:
+
+```hcl
+# modules/my-new-module/main.tf
+resource "azurerm_resource" "example" {
+name                = var.name
+resource_group_name = var.resource_group_name
+location            = var.location
+}
+```
+
+
+### Adding a New Environment
+
+1. Create directory: `environments/{environment}/`
+2. Copy and customize `terraform.tfvars`
+3. Update CI/CD pipelines to include new environment
+4. Configure backend for new state file
+
+```bash
+mkdir -p environments/uat
+cp environments/staging/terraform.tfvars environments/uat/
+# Edit environments/uat/terraform.tfvars
+```
+
+### Adding Custom Policy
+
+```hcl
+# In modules/azure-policy/main.tf
+resource "azurerm_policy_definition" "custom" {
+  name         = "custom-policy-name"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "Custom Policy Display Name"
+
+  policy_rule = jsonencode({
+    if = {
+      # Your policy condition
+    }
+    then = {
+      effect = "deny"   # or "audit", "append", etc.
+    }
+  })
+}
+```
+
+### Adding Subnets
+
+Update your environment's `terraform.tfvars`:
+
+```hcl
+subnets = {
+  existing_subnet = {
+    # ... existing config
+  }
+  new_subnet = {
+    name              = "snet-newsubnet"
+    address_prefixes  = ["10.0.5.0/24"]
+    service_endpoints = ["Microsoft.Storage"]
+    nsg_rules = [
+      {
+        name                      = "AllowSpecificTraffic"
+        priority                  = 100
+        direction                 = "Inbound"
+        access                    = "Allow"
+        protocol                  = "Tcp"
+        source_port_range         = "*"
+        destination_port_range    = "443"
+        source_address_prefix     = "10.0.1.0/24"
+        destination_address_prefix= "*"
+      }
+    ]
+  }
+}
+```
+
+## Testing
+
+### Pre-Deployment Validation
+
+```bash
+# Format check
+terraform fmt --check --recursive
+
+# Validation
+terraform validate
+
+# Security scan with Checkov
+checkov -d . --framework terraform
+
+# Security scan with TFSec
+tfsec .
+
+# Generate documentation
+terraform-docs markdown table . > TERRAFORM.md
+```
+
+### Post-Deployment Verification
+
+```bash
+# Verify resource creation
+az group list --output table
+
+# Check network configuration
+az network vnet list --resource-group rg-landingzone-prod-001 --output table
+
+# Verify Key Vault
+az keyvault list --resource-group rg-landingzone-prod-001 --output table
+
+# Check policy assignments
+az policy assignment list --resource-group rg-landingzone-prod-001 --output table
+
+## 📖 Module Documentation
+
+Each module includes detailed documentation:
+
+- [Resource Group Module](./modules/resource-group/README.md)
+- [Networking Module](./modules/networking/README.md)
+- [Azure Policy Module](./modules/azure-policy/README.md)
+- [Key Vault Module](./modules/key-vault/README.md)
+- [IAM Module](./modules/iam/README.md)
+
+## 🤝 Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests and validation
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- HashiCorp for Terraform
+- Microsoft Azure for cloud platform
+- Azure Landing Zone architecture best practices
+- Cloud Adoption Framework (CAF)
+
+## 📞 Support
+
+For issues, questions, or contributions:
+
+- **Issues**: [GitHub Issues](https://github.com/your-org/azure-landing-zone/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-org/azure-landing-zone/discussions)
