@@ -521,6 +521,7 @@ az keyvault list --resource-group rg-landingzone-prod-001 --output table
 
 # Check policy assignments
 az policy assignment list --resource-group rg-landingzone-prod-001 --output table
+```
 
 ## 📖 Module Documentation
 
