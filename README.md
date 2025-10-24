@@ -111,6 +111,7 @@ modules/
     LICENSE
     CONTRIBUTING.md
     README.md
+```
 
 ## 🚀 Quick Start
 
