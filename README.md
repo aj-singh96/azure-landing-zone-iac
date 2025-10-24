@@ -322,3 +322,51 @@ This project follows Azure naming best practices:
 ### Tagging Strategy
 
 All resources are tagged with:
+
+| Tag                         | Required  | Description                                     |
+|-----------------------------|-----------|-------------------------------------------------|
+| Environment                 | Yes       | dev, staging, prod                              |
+| Owner                       | Yes       | Team or individual responsibility               |
+| CostCenter                  | Yes       | Billing/chargeback code                         |
+| Application                 | Yes       | Application or service name                     |
+| ManagedBy                   | Auto      | Always "Terraform"                              |
+| CreatedDate                 | Auto      | ISO 8601 creation timestamp                     |
+| DataClassification          | Prod Only | public, internal, confidential                  |
+
+### Policy Assignments
+
+The following policies are enforced at the resource group level:
+
+1. **Require Tags** (`enforce_tagging = true`)
+   - Ensures all resources have required tags
+   - Configurable tag list
+
+2. **Allowed Locations** (`enforce_allowed_locations = true`)
+   - Restricts resource deployment to approved regions
+   - Prevents data residency violations
+
+3. **Require Encryption** (`enforce_encryption = true`)
+   - Enforces encryption for storage accounts
+   - Ensures data at rest protection
+
+4. **Audit Diagnostic Settings** (`enable_diagnostic_audit = true`)
+   - Identifies resources without diagnostic logging
+   - Improves observability and compliance
+  
+## 🚀 CI/CD Integration
+
+### Github Actions
+
+The project includes a complete Github Actions workflow(`.github/workflow/terraform.yml`) with:
+
+- **Automated Planning**: Plan generation for all environments
+- **Security Scanning**: Checkov, TFSec, and Terrascan integration
+- **Multi-Stage Deployment**: Dev -> Staging -> Production promotion
+- **Approval Gates**: Manual approval for production deployments
+- **PR Comments**: Automatic plan comments on pull requests
+
+#### Required Secrets
+
+Configure these secrets in your Github repository: 
+
+```
